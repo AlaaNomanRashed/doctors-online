@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "669428277281",
+    "project_id": "medicalconsulting-2b730",
+    "storage_bucket": "medicalconsulting-2b730.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:669428277281:android:19704dd295d08e3ca48360",
+        "android_client_info": {
+          "package_name": "com.doctor.doctors_online"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "669428277281-5ttilf2cteo4muqve8d3oduqjv25r85f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD1hSHxOX8qJQ_i3t7WFPADieQ5D9a6XuI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "669428277281-5ttilf2cteo4muqve8d3oduqjv25r85f.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
