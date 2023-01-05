@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../widgets/custom_drawer.dart';
 import 'consultation_requests.dart';
 import 'medical_reports.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -44,8 +45,8 @@ class HomeScreen extends StatelessWidget {
                           ),
                           SizedBox(height: 6.h,),
                           Text(
-                              'Medical Consultation',
-                            style: TextStyle(
+                              AppLocalizations.of(context)!.consulting,
+                            style: TextStyle( 
                               color: const Color(0xFF0b2d39),
                               fontSize: 16.sp,
                               fontWeight: FontWeight.bold

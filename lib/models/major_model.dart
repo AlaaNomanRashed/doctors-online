@@ -1,7 +1,7 @@
 class MajorModel{
 
   late String id;
-  late int? doctorId;
+  late int? parentId;
   late String? majorAr;
   late String? majorEn;
 
@@ -9,7 +9,7 @@ class MajorModel{
 
   MajorModel.fromMap(Map<String, dynamic> map) {
     id = map['id'];
-    doctorId = map['doctorId'];
+    parentId = map['parentId'];
     majorAr = map['majorAr'];
     majorEn = map['majorEn'];
   }
@@ -17,7 +17,7 @@ class MajorModel{
   Map<String, dynamic> toMap() {
     Map<String, dynamic> map = {};
     map['id'] = id;
-    map['doctorId'] = doctorId;
+    map['parentId'] = parentId;
     map['majorAr'] = majorAr;
     map['majorEn'] = majorEn;
     return map;

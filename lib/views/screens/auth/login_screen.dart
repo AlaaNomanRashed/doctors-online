@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:doctors_online/enums.dart';
 import 'package:doctors_online/providers/auth_provider.dart';
+import 'package:doctors_online/views/screens/app/account_type.dart';
 import 'package:doctors_online/views/screens/auth/forgot_password.dart';
 import 'package:doctors_online/views/screens/auth/register_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -129,9 +131,13 @@ class _LoginScreenState extends State<LoginScreen> with SnackBarHelper {
                           ),
                           InkWell(
                             onTap: () {
+                              // Navigator.of(context).push(MaterialPageRoute(
+                              //     builder: (context) =>
+                              //         const RegisterScreen()));
+
                               Navigator.of(context).push(MaterialPageRoute(
                                   builder: (context) =>
-                                      const RegisterScreen()));
+                                      const AccountType()));
                             },
                             child: Text(
                               '-Register',
@@ -162,7 +168,8 @@ class _LoginScreenState extends State<LoginScreen> with SnackBarHelper {
     }
   }
 
-  late final UserCredential userCredential;
+  late UserCredential userCredential;
+
   Future<void> login() async {
     setState(() {
       isLoading = true;
@@ -232,7 +239,7 @@ class _LoginScreenState extends State<LoginScreen> with SnackBarHelper {
         await SharedPreferencesController()
             .setter(type: String, key: SpKeys.uId, value: doc.get('uId'));
         Provider.of<AuthProvider>(context, listen: false)
-            .setName_(doc.get('name'));
+            .setName_(doc.get('username'));
         Provider.of<AuthProvider>(context, listen: false)
             .setMobile_(doc.get('mobile'));
         Provider.of<AuthProvider>(context, listen: false)

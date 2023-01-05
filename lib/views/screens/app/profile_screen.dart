@@ -1,9 +1,11 @@
 import 'package:doctors_online/models/user_model.dart';
+import 'package:doctors_online/providers/auth_provider.dart';
 import 'package:doctors_online/views/screens/app/medical_reports.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 import '../../../shared_preferences/shared_preferences.dart';
 import '../../widgets/my_button.dart';
 import '../auth/login_screen.dart';
@@ -20,8 +22,10 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   bool isLoading = false;
   final credential = FirebaseAuth.instance.currentUser;
-  UserModel? userModel;
+
+  // UserModel? userModel;
   File? file_;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -65,43 +69,47 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   color: Colors.grey,
                 ),
                 child: Center(
-                  child: CircleAvatar(
-                    backgroundColor: Colors.white54,
-                    radius: 60.w,
-                    backgroundImage: NetworkImage(userModel!.avatar),
+                  child: Container(
+                    width: 120.w,
+                    height: 120.h,
+                    clipBehavior: Clip.antiAlias,
+                    decoration: const BoxDecoration(
+                      color: Colors.white38,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Image.network(
+                      Provider.of<AuthProvider>(context).avatar_,
+                      errorBuilder: (context, error, stackTrace) {
+                         return const Icon(Icons.person, size: 70);
+                      },
+                    ),
                   ),
                 ),
               ),
-              SizedBox(
-                height: 16.h,
-              ),
+              SizedBox(height: 16.h),
               Text(
                 "Email: ${credential!.email} ",
                 style: TextStyle(
                   fontSize: 17.sp,
                 ),
               ),
-              SizedBox(
-                height: 11.h,
-              ),
+              SizedBox(height: 11.h),
               Text(
                 "Created date:  ${credential!.metadata.creationTime}   ",
                 style: TextStyle(
                   fontSize: 17.sp,
                 ),
+                textAlign: TextAlign.center,
               ),
-              SizedBox(
-                height: 11.h,
-              ),
+              SizedBox(height: 11.h),
               Text(
                 "Last Signed In: ${credential!.metadata.lastSignInTime}    ",
                 style: TextStyle(
                   fontSize: 17.sp,
                 ),
+                textAlign: TextAlign.center,
               ),
-              SizedBox(
-                height: 50.h,
-              ),
+              SizedBox(height: 50.h),
               MyButton(
                 buttonName: 'Modify profile',
                 isLoading: isLoading,
@@ -110,9 +118,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       builder: (context) => const ModifyProfileScreen()));
                 },
               ),
-              SizedBox(
-                height: 10.h,
-              ),
+              SizedBox(height: 10.h),
               MyButton(
                 buttonName: 'My Medical Reports',
                 isLoading: isLoading,
@@ -121,9 +127,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       builder: (context) => const MedicalReportsScreen()));
                 },
               ),
-              SizedBox(
-                height: 10.h,
-              ),
+              SizedBox(height: 10.h),
               MyButton(
                 buttonName: 'Change language',
                 isLoading: isLoading,

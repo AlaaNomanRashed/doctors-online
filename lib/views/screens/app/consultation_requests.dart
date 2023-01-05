@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:doctors_online/enums.dart';
 import 'package:doctors_online/firebase/controllers/consultation_fb_controller.dart';
 import 'package:doctors_online/models/consultation_model.dart';
 import 'package:doctors_online/shared_preferences/shared_preferences.dart';

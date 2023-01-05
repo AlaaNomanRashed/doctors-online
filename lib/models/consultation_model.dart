@@ -1,25 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:doctors_online/enums.dart';
 import 'package:flutter/material.dart';
 
-enum ConsultationStatus {
-  // قيد الانتظار
-  waiting,
-
-  // حذف الطلب من قبل المريض
-  deleted,
-
-  //  تم الرفض من ثبل الطبيب
-  rejected,
-
-  // قيد المراجعة
-  inProgress,
-
-  // تم تحويل الطلب للتوجه الى اقرب صيديلة
-  transferred,
-
-  // تم صرف الرشيتة من الصيدلية
-  completed,
-}
 
 Color consultationStatusColor(String statusText){
   Color color = Colors.black;
@@ -93,8 +75,8 @@ class ConsultationModel {
     majorId = map['majorId'];
     doctorUId = map['doctorUId'];
     note = map['note'];
-    doctorUId = map['doctorUId'];
-    doctorUId = map['doctorUId'];
+    medicalReports = map['medicalReports'];
+    timestamp = map['timestamp'];
     requestStatus = map['requestStatus'];
   }
 

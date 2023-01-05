@@ -1,3 +1,4 @@
+import 'package:doctors_online/enums.dart';
 import 'package:doctors_online/providers/app_provider.dart';
 import 'package:doctors_online/providers/auth_provider.dart';
 import 'package:doctors_online/providers/lang_provider.dart';
@@ -6,7 +7,7 @@ import 'package:doctors_online/splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-//import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
@@ -46,6 +47,7 @@ Future<void> setter() async {
         .setter(type: String, key: SpKeys.lang, value: 'en');
   }
 }
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -66,14 +68,14 @@ class MyApp extends StatelessWidget {
       child: ScreenUtilInit(
         designSize: const Size(375, 812),
         builder: (context, child) {
-          return  const MaterialApp(
-           home: SplashScreen(),
-            // localizationsDelegates: AppLocalizations.localizationsDelegates,
-            //   supportedLocales: const [
-            //     Locale('ar'),
-            //     Locale('en'),
-            //   ],
-            //   locale: Locale(Provider.of<LangProviders>(context).lang_),
+          return MaterialApp(
+            home: const SplashScreen(),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: const [
+              Locale('ar'),
+              Locale('en'),
+            ],
+            locale: Locale(Provider.of<LangProviders>(context).lang_),
             debugShowCheckedModeBanner: false,
           );
         },

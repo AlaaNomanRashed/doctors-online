@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:doctors_online/enums.dart';
 import 'package:path/path.dart' show basename;
 import 'package:doctors_online/firebase/controllers/user_fb_controller.dart';
 import 'package:doctors_online/models/user_model.dart';

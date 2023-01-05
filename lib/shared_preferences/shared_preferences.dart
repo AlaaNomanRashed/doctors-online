@@ -1,18 +1,7 @@
+import 'package:doctors_online/enums.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-enum SpKeys {
-  loggedIn,
-  lang,
-  fcmToken,
-  uId,
-  userType,
-  username,
-  email,
-  mobile,
-  avatar,
-  cityId,
-  address,
-}
+
 
 class SharedPreferencesController {
   static final SharedPreferencesController _sharedPrefControllerObj =

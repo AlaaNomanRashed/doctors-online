@@ -1,3 +1,4 @@
+import 'package:doctors_online/enums.dart';
 import 'package:doctors_online/firebase/controllers/major_fb_controller.dart';
 import 'package:doctors_online/providers/app_provider.dart';
 import 'package:doctors_online/shared_preferences/shared_preferences.dart';
@@ -20,55 +21,61 @@ class _SplashScreenState extends State<SplashScreen> {
   Future<void> navigate() async {
     Future.delayed(const Duration(seconds: 3), () {
       Navigator.of(context).pushReplacement(MaterialPageRoute(
-        builder: (context) => (SharedPreferencesController().getter(type: bool, key: SpKeys.loggedIn)) == true
+        builder: (context) => (SharedPreferencesController()
+                    .getter(type: bool, key: SpKeys.loggedIn)) ==
+                true
             ? const HomeScreen()
             : const LoginScreen(),
       ));
     });
   }
 
-  Future<void> getCities()async{
+  Future<void> getCities() async {
     var data = await CityFbController().readCities();
-Provider.of<AppProvider>(context, listen: false).setCities(data);
+    Provider.of<AppProvider>(context, listen: false).setCities(data);
   }
 
-  Future<void> getMajors()async{
+  Future<void> getMajors() async {
     var data = await MajorFbController().readMajor();
+
     Provider.of<AppProvider>(context, listen: false).setMajor(data);
   }
 
-  Future<void> init()async{
-   await getCities();
-   await  getMajors();
-   await  navigate();
+  Future<void> init() async {
+    await getCities();
+    await getMajors();
+    await navigate();
   }
 
   @override
   void initState() {
     super.initState();
     init();
-
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-backgroundColor: const Color(0xFFa8d5e5),
+      backgroundColor: const Color(0xFFa8d5e5),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
             children: [
-Image.asset('assets/images/doctors.png'),
-              SizedBox(height: 80.h,),
+              Image.asset('assets/images/doctors.png'),
+              SizedBox(
+                height: 80.h,
+              ),
               Text(
-                  'medical consulting',
+                'medical consulting',
                 style: TextStyle(
                   color: const Color(0xFF134b5f),
                   fontSize: 30.sp,
                   fontWeight: FontWeight.w800,
                 ),
               ),
-              SizedBox(height: 24.h,),
+              SizedBox(
+                height: 24.h,
+              ),
               Text(
                 'Appoint Your Doctor',
                 style: TextStyle(
@@ -77,7 +84,9 @@ Image.asset('assets/images/doctors.png'),
                   fontWeight: FontWeight.w500,
                 ),
               ),
-              SizedBox(height: 120.h,),
+              SizedBox(
+                height: 120.h,
+              ),
               Image.asset('assets/images/heart.png'),
             ],
           ),

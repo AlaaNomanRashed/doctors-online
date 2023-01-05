@@ -1,3 +1,4 @@
+import 'package:doctors_online/enums.dart';
 import 'package:doctors_online/models/consultation_model.dart';
 import 'package:flutter/material.dart';
 

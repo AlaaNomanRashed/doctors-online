@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:doctors_online/enums.dart';
 import 'dart:io';
 import 'package:doctors_online/helpers/snackbar.dart';
 import 'package:doctors_online/models/consultation_model.dart';
@@ -30,9 +31,11 @@ class _AddConsultationScreenState extends State<AddConsultationScreen>
     with SnackBarHelper {
   late TextEditingController noteEditingController;
   bool isLoading = false;
+
   @override
   void initState() {
     noteEditingController = TextEditingController();
+    getDoctors();
     myStream = UserFbController().readUser();
     super.initState();
   }
@@ -42,7 +45,9 @@ class _AddConsultationScreenState extends State<AddConsultationScreen>
     noteEditingController.dispose();
     super.dispose();
   }
-var myStream;
+
+  var myStream;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -83,19 +88,15 @@ var myStream;
                       ),
                       child: Center(
                         child: Row(
-                          children: const [
-                            Padding(
+                          children: [
+                            const Padding(
                               padding: EdgeInsets.symmetric(horizontal: 20.0),
                               child: Icon(
                                 Icons.subject,
                                 color: Colors.white,
                               ),
                             ),
-                            Text(
-                              'Error => No Element',
-
-                              /// todo selectedMajor.majorEn??''
-                            ),
+                            Text(selectedMajor.majorAr ?? ''),
                           ],
                         ),
                       ),
@@ -230,10 +231,13 @@ var myStream;
                             },
                             child: Container(
                               decoration: BoxDecoration(
-                                  border:selectedMedicalReports.contains(userModel.medicalReports![index]) ?Border.all(
-                                color: Colors.black,
-                                width: 3,
-                              ):null,
+                                border: selectedMedicalReports.contains(
+                                        userModel.medicalReports![index])
+                                    ? Border.all(
+                                        color: Colors.black,
+                                        width: 3,
+                                      )
+                                    : null,
                               ),
                               child: CachedNetworkImage(
                                 imageUrl: userModel.medicalReports[index],
@@ -288,6 +292,7 @@ var myStream;
     } catch (e) {
       doctors = [];
     }
+    setState(() {});
   }
 
   List<UserModel> get majorDoctors {
@@ -322,7 +327,7 @@ var myStream;
                     Navigator.of(context).pop();
                   },
                   child: Text(
-                    majors[index].majorEn ?? '',
+                    majors[index].majorAr ?? '',
                     style: TextStyle(color: Colors.indigo[900]),
                   ),
                 );
@@ -350,7 +355,7 @@ var myStream;
               itemBuilder: (context, index) {
                 return InkWell(
                   onTap: () {
-                    hereState(() {
+                    setState(() {
                       selectedDoctor = majorDoctors[index];
                     });
                     Navigator.of(context).pop();
@@ -362,9 +367,7 @@ var myStream;
                         backgroundImage:
                             NetworkImage(majorDoctors[index].avatar ?? ''),
                       ),
-                      SizedBox(
-                        width: 10.w,
-                      ),
+                      SizedBox(width: 10.w),
                       Text(
                         /// todo error => null
                         majorDoctors[index].username ?? '',
@@ -400,7 +403,8 @@ var myStream;
     });
     try {
       await ConsultationsFbController().create(consultation);
-    /// todo: send notification to doctor
+
+      /// todo: send notification to doctor
       Navigator.of(context).pop();
     } catch (e) {
       setState(() {
@@ -424,7 +428,7 @@ var myStream;
     consultationModel.note = noteEditingController.text;
     consultationModel.medicalReports = selectedMedicalReports;
     consultationModel.timestamp = Timestamp.now();
-    consultationModel.requestStatus = ConsultationStatus.waiting.name ;
+    consultationModel.requestStatus = ConsultationStatus.waiting.name;
 
     return consultationModel;
   }
@@ -441,8 +445,11 @@ var myStream;
               'Which doctor would you like to follow up on your health? Please.. choose it first!',
           error: true);
       return false;
-    }else if(selectedMedicalReports.isEmpty){
-      showSnackBar(context, message: 'Please. Choose at least one file so that your doctor can diagnose your health condition', error: true);
+    } else if (selectedMedicalReports.isEmpty) {
+      showSnackBar(context,
+          message:
+              'Please. Choose at least one file so that your doctor can diagnose your health condition',
+          error: true);
     }
     return true;
   }
@@ -464,6 +471,7 @@ var myStream;
   }
 
   var imagePicker = ImagePicker();
+
   Future<void> pickImage() async {
     var pickImage = await imagePicker.pickMultiImage(imageQuality: 50);
     setState(() {

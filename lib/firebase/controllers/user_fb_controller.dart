@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:doctors_online/shared_preferences/shared_preferences.dart';
 import '../../models/user_model.dart';
-
+import 'package:doctors_online/enums.dart';
 class UserFbController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -64,7 +64,7 @@ return data.data();
     try {
       var data = await _firestore
           .collection('users')
-          .where('types', isEqualTo: types.name)
+          .where('type', isEqualTo: types.name)
           .get();
       return data.docs.map((e) => UserModel.fromMap(e.data())).toList();
     } catch (e) {

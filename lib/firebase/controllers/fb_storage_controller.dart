@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:doctors_online/enums.dart';
 import 'package:doctors_online/helpers/snackbar.dart';
 import 'package:doctors_online/shared_preferences/shared_preferences.dart';
 import 'package:firebase_storage/firebase_storage.dart';

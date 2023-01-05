@@ -1,23 +1,21 @@
-enum UserTypes {
-  doctor,
-  patient,
-  pharmacy,
-}
+
 
 class UserModel {
   late String uId;
   late String username;
   late String email;
   late String password;
-  late String  avatar;
-  late String  dob;
-  late String  mobile;
-  late int? gender; /// 1=Male 2=Female
-  late String  type;
-  late String  majorId;
-  late List<String>  medicalReports;
-  late String  address;
-  late String  cityId;
+  late String avatar;
+  late String dob;
+  late String mobile;
+  late int? gender;
+
+  /// 1=Male 2=Female
+  late String type;
+  late String majorId;
+  late List<dynamic> medicalReports;
+  late String address;
+  late int cityId;
 
   UserModel();
 

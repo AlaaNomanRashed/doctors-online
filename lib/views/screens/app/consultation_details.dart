@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:doctors_online/enums.dart';
 import 'package:doctors_online/firebase/controllers/user_fb_controller.dart';
 import 'package:doctors_online/models/consultation_model.dart';
 import 'package:doctors_online/providers/app_provider.dart';
