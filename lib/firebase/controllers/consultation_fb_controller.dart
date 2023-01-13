@@ -48,13 +48,28 @@ class ConsultationsFbController {
 
 
 
+
+
+
+  Stream<QuerySnapshot<ConsultationModel>> readPharmacyConsultations() async* {
+    yield* _firestore
+        .collection('consultations')
+        .where('pharmacyUId', isEqualTo: SharedPreferencesController().getter(type: String, key: SpKeys.uId).toString()).withConverter<ConsultationModel>(
+      fromFirestore: (snapshot, options) =>ConsultationModel.fromMap(snapshot.data()!) ,
+      toFirestore: (value, options) =>value.toMap() ,
+    )
+        .snapshots();
+  }
+
+
+
+
+
   Future<void> update(ConsultationModel consultationModel) async {
     await _firestore
         .collection('consultations')
         .doc(consultationModel.id)
-        .update({
-      /// todo
-    });
+        .update({});
   }
 
   Future<void> delete(ConsultationModel consultationModel) async {
@@ -65,9 +80,11 @@ class ConsultationsFbController {
   }
 
 
-  Future<void> changeConsultationStatus(ConsultationStatus consultationStatus, String consultationId)async{
+  Future<void> updateConsultation(ConsultationStatus consultationStatus, String consultationId,
+      {String pharmacyUId = ''})async{
 await _firestore.collection('consultations').doc(consultationId).update({
   'requestStatus': consultationStatus.name,
+  'pharmacyUId' :pharmacyUId
 });
   }
 

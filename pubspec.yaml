@@ -48,6 +48,11 @@ dependencies:
   firebase_auth: ^4.2.4
   image_picker: ^0.8.6
   cached_network_image: ^3.2.3
+  flutter_local_notifications: ^13.0.0
+  android_alarm_manager_plus: ^2.1.0
+  intl: ^0.17.0
+
+
 
 dev_dependencies:
   flutter_test:

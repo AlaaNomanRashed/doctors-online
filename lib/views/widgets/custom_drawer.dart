@@ -5,11 +5,14 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../providers/lang_provider.dart';
 import '../../shared_preferences/shared_preferences.dart';
-import '../screens/app/medical_reports.dart';
-import '../screens/app/profile_screen.dart';
+import '../screens/app/consultation/medical_reports.dart';
+import '../screens/app/appointment/medications_and_dates.dart';
+import '../screens/app/user/setting_screen.dart';
 import '../screens/auth/login_screen.dart';
+import 'list_tile_item_drawer.dart';
 
 class CustomDrawer extends StatelessWidget {
   const CustomDrawer({
@@ -34,10 +37,12 @@ class CustomDrawer extends StatelessWidget {
                 accountName: Text(
                     SharedPreferencesController()
                         .getter(type: String, key: SpKeys.username),
-                    style: TextStyle(color: Colors.black, fontSize: 40.sp)),
-                accountEmail: Text(SharedPreferencesController()
-                    .getter(type: String, key: SpKeys.email)),
-                currentAccountPictureSize: const Size.square(99),
+                    style: TextStyle(color: Colors.black, fontSize: 16.sp)),
+                accountEmail: Text(
+                    SharedPreferencesController()
+                        .getter(type: String, key: SpKeys.email),
+                    style: TextStyle(color: Colors.black54, fontSize: 8.sp)),
+                currentAccountPictureSize: const Size.square(80),
                 currentAccountPicture:
                     Provider.of<AuthProvider>(context, listen: false)
                             .avatar_
@@ -49,49 +54,31 @@ class CustomDrawer extends StatelessWidget {
                         : CircleAvatar(
                             radius: 55.w,
                             backgroundImage:
-                                const AssetImage('assets/images/doctor1.jpg')),
+                                const AssetImage('assets/images/avatar.jpg')),
               ),
-              ListTile(
-                  title: Text(
-                    'Home',
-                    style: TextStyle(color: Colors.white, fontSize: 16.sp),
-                  ),
-                  leading: const Icon(
-                    Icons.home,
-                    color: Colors.white,
-                    size: 30,
-                  ),
-                  onTap: () {
-                    Navigator.of(context).pop();
-                  }),
-              ListTile(
-                  title: Text(
-                    'Profile',
-                    style: TextStyle(color: Colors.white, fontSize: 16.sp),
-                  ),
-                  leading: const Icon(
-                    Icons.person,
-                    color: Colors.white,
-                    size: 30,
-                  ),
-                  onTap: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => const ProfileScreen()));
-                  }),
+              ListTileItemDrawer(
+                title: AppLocalizations.of(context)!.home,
+                icon: Icons.home,
+                onTap: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+              ListTileItemDrawer(
+                title: AppLocalizations.of(context)!.profile,
+                icon: Icons.person,
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const SettingScreen()));
+                },
+              ),
+
               SharedPreferencesController()
                           .getter(type: String, key: SpKeys.userType)
                           .toString() ==
                       'patient'
-                  ? ListTile(
-                      title: Text(
-                        'My Medical Reports',
-                        style: TextStyle(color: Colors.white, fontSize: 16.sp),
-                      ),
-                      leading: const Icon(
-                        Icons.medication_sharp,
-                        color: Colors.white,
-                        size: 30,
-                      ),
+                  ? ListTileItemDrawer(
+                      title: AppLocalizations.of(context)!.myMedicalReports,
+                      icon: Icons.medication_outlined,
                       onTap: () {
                         Navigator.of(context).push(MaterialPageRoute(
                             builder: (context) =>
@@ -99,37 +86,41 @@ class CustomDrawer extends StatelessWidget {
                       },
                     )
                   : const SizedBox.shrink(),
-              ListTile(
-                  title: Text(
-                    'Language',
-                    style: TextStyle(color: Colors.white, fontSize: 16.sp),
-                  ),
-                  leading: const Icon(
-                    Icons.language,
-                    color: Colors.white,
-                    size: 30,
-                  ),
-                  onTap: () async {
-                    await Provider.of<LangProviders>(context, listen: false)
-                        .changeLanguage();
-                  }),
-              ListTile(
-                  title: Text(
-                    'Log Out',
-                    style: TextStyle(color: Colors.white, fontSize: 16.sp),
-                  ),
-                  leading: const Icon(
-                    Icons.exit_to_app,
-                    color: Colors.white,
-                    size: 30,
-                  ),
-                  onTap: () async {
-                    await FirebaseAuth.instance.signOut();
-                    await FirebaseMessaging.instance.deleteToken();
-                    await SharedPreferencesController().logout();
-                    Navigator.of(context).pushReplacement(MaterialPageRoute(
-                        builder: (context) => const LoginScreen()));
-                  }),
+              SharedPreferencesController()
+                          .getter(type: String, key: SpKeys.userType)
+                          .toString() ==
+                      'patient'
+                  ? ListTileItemDrawer(
+                      title: AppLocalizations.of(context)!.datesMedications,
+                      icon: Icons.alarm_add_sharp,
+                      onTap: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) =>
+                                const DatesMedicationsScreen()));
+                      },
+                    )
+                  : const SizedBox.shrink(),
+              ListTileItemDrawer(
+                title:  Provider.of<LangProviders>(context).lang_ == 'en' ? 'العربية':'Language',
+                icon: Icons.language,
+                onTap: ()async {
+                  await Provider.of<LangProviders>(context, listen: false)
+                      .changeLanguage();
+                },
+              ),
+              ListTileItemDrawer(
+                title:  AppLocalizations.of(context)!.logout,
+                icon: Icons.logout,
+                onTap: ()async {
+                  await FirebaseAuth.instance.signOut();
+                  await FirebaseMessaging.instance.deleteToken();
+                  await FirebaseMessaging.instance.unsubscribeFromTopic('updates');
+                  await SharedPreferencesController().logout();
+                  Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(builder: (context) => const LoginScreen()));
+                },
+              ),
+
             ],
           ),
           Container(

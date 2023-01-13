@@ -63,7 +63,7 @@ class _SplashScreenState extends State<SplashScreen> {
             children: [
               Image.asset('assets/images/doctors.png'),
               SizedBox(
-                height: 80.h,
+                height: 30.h,
               ),
               Text(
                 'medical consulting',
@@ -74,7 +74,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 ),
               ),
               SizedBox(
-                height: 24.h,
+                height: 20.h,
               ),
               Text(
                 'Appoint Your Doctor',
@@ -85,7 +85,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 ),
               ),
               SizedBox(
-                height: 120.h,
+                height: 60.h,
               ),
               Image.asset('assets/images/heart.png'),
             ],

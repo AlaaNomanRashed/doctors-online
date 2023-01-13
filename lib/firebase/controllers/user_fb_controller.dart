@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:doctors_online/shared_preferences/shared_preferences.dart';
 import '../../models/user_model.dart';
 import 'package:doctors_online/enums.dart';
+
 class UserFbController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -17,15 +18,24 @@ class UserFbController {
         .collection('users')
         .doc(uId)
         .withConverter<UserModel>(
-        fromFirestore: (snapshot, options) =>UserModel.fromMap(snapshot.data()!) ,
-        toFirestore: (value, options) => value.toMap(),
-    )
+          fromFirestore: (snapshot, options) =>
+              UserModel.fromMap(snapshot.data()!),
+          toFirestore: (value, options) => value.toMap(),
+        )
         .get();
+    return data.data();
+  }
 
-
-return data.data();
-
-
+  Future<List<UserModel>> getPharmaciesByCity(int cityId) async {
+   var data = await _firestore
+        .collection('users')
+        .where('type', isEqualTo: 'pharmacy')
+        .where('cityId', isEqualTo: cityId).withConverter<UserModel>(
+       fromFirestore: (snapshot, options) => UserModel.fromMap(snapshot.data()!) ,
+       toFirestore: (value, options) => value.toMap(),
+   )
+        .get();
+    return data.docs.map((e) => e.data()).toList();
   }
 
   Stream<QuerySnapshot> readUser() async* {

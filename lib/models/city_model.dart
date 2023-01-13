@@ -1,8 +1,8 @@
 class CityModel {
   late int id;
-  late int? parentId;
-  late String? nameAr;
-  late String? nameEn;
+  late int parentId;
+  late String nameAr;
+  late String nameEn;
 
   CityModel();
 

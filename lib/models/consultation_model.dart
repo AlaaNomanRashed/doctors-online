@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:doctors_online/enums.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 
 Color consultationStatusColor(String statusText){
@@ -15,10 +16,10 @@ Color consultationStatusColor(String statusText){
       color = Colors.red;
       break;
     case ConsultationStatus.rejected:
-      color = Colors.deepOrangeAccent;
+      color = Colors.red;
       break;
     case ConsultationStatus.inProgress:
-      color = Colors.yellowAccent;
+      color = Colors.orange;
       break;
     case ConsultationStatus.transferred:
       color = Colors.purple;
@@ -35,22 +36,22 @@ String consultationStatusText(BuildContext context, String statusText){
   ConsultationStatus status=ConsultationStatus.values.firstWhere((element) => element.name==statusText);
   switch (status) {
     case ConsultationStatus.waiting:
-      text = 'Waiting';
+      text = AppLocalizations.of(context)!.waiting;
       break;
     case ConsultationStatus.deleted:
-      text = 'Deleted';
+      text = AppLocalizations.of(context)!.deleted;
       break;
     case ConsultationStatus.rejected:
-      text = 'Rejected';
+      text = AppLocalizations.of(context)!.rejected;
       break;
     case ConsultationStatus.inProgress:
-      text = 'InProgress';
+      text = AppLocalizations.of(context)!.inProgress;
       break;
     case ConsultationStatus.transferred:
-      text = 'Transferred';
+      text = AppLocalizations.of(context)!.transferred;
       break;
     case ConsultationStatus.completed:
-      text = 'Completed';
+      text = AppLocalizations.of(context)!.completed;
       break;
   }
   return text;
@@ -62,6 +63,7 @@ class ConsultationModel {
   late String? patientUId;
   late String? majorId;
   late String? doctorUId;
+  late String? pharmacyUId;
   late String? note;
   late List<dynamic>? medicalReports;
   late Timestamp timestamp;
@@ -74,6 +76,7 @@ class ConsultationModel {
     patientUId = map['patientUId'];
     majorId = map['majorId'];
     doctorUId = map['doctorUId'];
+    pharmacyUId = map['pharmacyUId'];
     note = map['note'];
     medicalReports = map['medicalReports'];
     timestamp = map['timestamp'];
@@ -86,6 +89,7 @@ class ConsultationModel {
     map['patientUId'] = patientUId;
     map['majorId'] = majorId;
     map['doctorUId'] = doctorUId;
+    map['pharmacyUId'] = pharmacyUId;
     map['note'] = note;
     map['medicalReports'] = medicalReports;
     map['timestamp'] = timestamp;

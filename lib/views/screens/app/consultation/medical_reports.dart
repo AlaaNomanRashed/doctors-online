@@ -9,9 +9,9 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
-import '../../widgets/my_button.dart';
-import '../../widgets/no_data.dart';
-
+import '../../../widgets/my_button.dart';
+import '../../../widgets/no_data.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 class MedicalReportsScreen extends StatefulWidget {
   const MedicalReportsScreen({Key? key}) : super(key: key);
 
@@ -31,7 +31,7 @@ class _MedicalReportsScreenState extends State<MedicalReportsScreen>
       backgroundColor: const Color(0xFFa8d5e5),
       appBar: AppBar(
         backgroundColor: const Color(0xFF0b2d39),
-        title: const Text('My Medical Reports'),
+        title:  Text(AppLocalizations.of(context)!.myMedicalReports),
         centerTitle: true,
       ),
 
@@ -98,7 +98,7 @@ class _MedicalReportsScreenState extends State<MedicalReportsScreen>
      bottomNavigationBar:  Padding(
        padding: const EdgeInsets.all(16.0),
        child: MyButton(
-         buttonName: 'Add Medical Reports ',
+         buttonName: AppLocalizations.of(context)!.addMedicalReports,
          isLoading: isLoading,
          onPressed: ()async{
            await addNewImage();
@@ -141,9 +141,9 @@ await FbStorageController().uploadMedicalReports(
     })async{
       if(taskState == TaskState.success){
         await UserFbController().addNewFile(url);
-        showSnackBar(context, message: 'The image has been added successfully', error: false);
+        showSnackBar(context, message: AppLocalizations.of(context)!.theImageHasBeenAddedSuccessfully, error: false);
       }else{
-        showSnackBar(context, message: 'Adding the image failed', error: true);
+        showSnackBar(context, message: AppLocalizations.of(context)!.addingTheImageFailed, error: true);
       }
     }
 );

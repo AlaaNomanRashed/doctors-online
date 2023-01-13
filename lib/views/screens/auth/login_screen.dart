@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:doctors_online/enums.dart';
 import 'package:doctors_online/providers/auth_provider.dart';
-import 'package:doctors_online/views/screens/app/account_type.dart';
+import 'package:doctors_online/views/screens/app/user/account_type.dart';
 import 'package:doctors_online/views/screens/auth/forgot_password.dart';
 import 'package:doctors_online/views/screens/auth/register_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';

@@ -448,14 +448,14 @@ class _RegisterScreenState extends State<RegisterScreen> with SnackBarHelper {
         password: passwordEditingController.text,
       );
 
-      /// todo مراجعة
+
       if(imgPath != null) {
         final storageRef = FirebaseStorage.instance.ref(imgName);
         await storageRef.putFile(imgPath!);
         urlImg = await storageRef.getDownloadURL();
       }
 
-      /// todo end
+
       await createNewUser();
     } on FirebaseAuthException catch (e) {
       setState(() {
@@ -509,6 +509,7 @@ class _RegisterScreenState extends State<RegisterScreen> with SnackBarHelper {
     userModel.medicalReports = [];
     userModel.cityId = myCity.id;
     userModel.majorId = '';
+    userModel.fcmToken ='';
     return userModel;
   }
 

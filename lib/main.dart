@@ -1,3 +1,4 @@
+import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:doctors_online/enums.dart';
 import 'package:doctors_online/providers/app_provider.dart';
 import 'package:doctors_online/providers/auth_provider.dart';
@@ -11,7 +12,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
-import 'models/consultation_model.dart';
+import 'firebase/fb_notifications.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,18 +22,23 @@ void main() async {
 
   /// Firebase
   await Firebase.initializeApp();
-  // await FbNotifications;
+  await FbNotifications.initNotifications();
+
+  await FirebaseMessaging.instance.setAutoInitEnabled(true);
+  FirebaseMessaging.instance.subscribeToTopic('general');
+
   FirebaseMessaging.instance.getToken().then((value) {
     SharedPreferencesController()
         .setter(type: String, key: SpKeys.fcmToken, value: value ?? '');
     print('Fcm Token ==> $value');
     print('Finish');
   }).catchError((onError) {});
-  await FirebaseMessaging.instance.setAutoInitEnabled(true);
-  FirebaseMessaging.instance.subscribeToTopic('general');
 
   /// Setter
   await setter();
+
+  /// Alarm
+  await AndroidAlarmManager.initialize();
 
   /// App
   runApp(const MyApp());

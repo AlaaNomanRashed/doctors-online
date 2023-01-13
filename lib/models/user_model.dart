@@ -15,6 +15,7 @@ class UserModel {
   late String majorId;
   late List<dynamic> medicalReports;
   late String address;
+  late String fcmToken;
   late int cityId;
 
   UserModel();
@@ -32,6 +33,7 @@ class UserModel {
     majorId = map['majorId'];
     medicalReports = map['medicalReports'];
     address = map['address'];
+    fcmToken = map['fcmToken'];
     cityId = map['cityId'];
   }
 
@@ -49,6 +51,7 @@ class UserModel {
     map['majorId'] = majorId;
     map['medicalReports'] = medicalReports;
     map['address'] = address;
+    map['fcmToken'] = fcmToken;
     map['cityId'] = cityId;
     return map;
   }

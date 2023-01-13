@@ -6,10 +6,10 @@ import 'package:doctors_online/shared_preferences/shared_preferences.dart';
 import 'package:doctors_online/views/widgets/no_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../widgets/consultation_widget.dart';
-import '../../widgets/text_field.dart';
+import '../../../widgets/consultation_item.dart';
+import '../../../widgets/text_field.dart';
 import 'add_consultation.dart';
-import 'consultation_details.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 ///  طلبات الاستشارة
 class ConsultationRequestsScreen extends StatefulWidget {
@@ -44,72 +44,65 @@ class _ConsultationRequestsScreenState
       backgroundColor: const Color(0xFFa8d5e5),
       appBar: AppBar(
         backgroundColor: const Color(0xFF0b2d39),
-        title: const Text('Consultation Requests'),
+        title: SharedPreferencesController()
+                    .getter(type: String, key: SpKeys.userType) ==
+                'pharmacy'
+            ? Text(AppLocalizations.of(context)!.transferRequests)
+            : Text(AppLocalizations.of(context)!.consultationRequests),
         centerTitle: true,
-        actions: [
-          Padding(
-            padding: const EdgeInsets.all(14.0),
-            child: InkWell(
-              onTap: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => const AddConsultationScreen()));
-              },
-              child: Row(
-                children: const [
-                  Icon(Icons.upload_file_sharp),
-                  Text('add'),
-                ],
-              ),
-            ),
-          )
-        ],
+        // actions: [
+        //   SharedPreferencesController()
+        //               .getter(type: String, key: SpKeys.userType)
+        //               .toString() ==
+        //           'patient'
+        //       ? Padding(
+        //           padding: const EdgeInsets.all(14.0),
+        //           child: InkWell(
+        //             onTap: () {
+        //               Navigator.of(context).push(MaterialPageRoute(
+        //                   builder: (context) => const AddConsultationScreen()));
+        //             },
+        //             child: Row(
+        //               children: [
+        //                 const Icon(Icons.upload_file_sharp),
+        //                 Text(AppLocalizations.of(context)!.add),
+        //               ],
+        //             ),
+        //           ),
+        //         )
+        //       : const SizedBox.shrink()
+        // ],
       ),
       body: Padding(
         padding: EdgeInsets.only(
           top: 20.h,
-          right: 6.w,
-          left: 6.w,
+          right: 16.w,
+          left: 16.w,
         ),
         child: Column(
           children: [
-            Row(
-              children: [
-                TextInputField(
-                  controller: searchEditingController,
-                  hint: 'Search',
-                  onChanged: (searchValue) {
-                    setState(() {
-                      for (int i = 0; i < consultations.length; i++) {
-                        searchConsultation.clear();
-                        if (consultations[i]
-                            .data()
-                            .note!
-                            .toLowerCase()
-                            .contains(searchValue.toLowerCase())) {
-                          searchConsultation.add(consultations[i].data());
-                        }
-                      }
-                    });
-                  },
-                  icon: Icons.search_rounded,
-                  inputType: TextInputType.text,
-                ),
-                SizedBox(
-                  width: 4.w,
-                ),
-                Container(
-                    height: 45.h,
-                    width: 45.w,
-                    decoration: BoxDecoration(
-                        color: Colors.grey[500]!.withOpacity(0.5),
-                        borderRadius: BorderRadius.circular(8.r)),
-                    child: Image.asset(
-                      'assets/images/search.png',
-                      height: 40.h,
-                      width: 40.w,
-                      fit: BoxFit.cover,
-                    ))
-              ],
+            TextInputField(
+              controller: searchEditingController,
+              hint: AppLocalizations.of(context)!.search,
+              onChanged: (searchValue) {
+                setState(() {
+                  for (int i = 0; i < consultations.length; i++) {
+                    searchConsultation.clear();
+                    if (consultations[i]
+                        .data()
+                        .note!
+                        .toLowerCase()
+                        .contains(searchValue.toLowerCase())) {
+                      searchConsultation.add(consultations[i].data());
+                    }
+                  }
+                });
+              },
+              icon: Icons.search_rounded,
+              inputType: TextInputType.text,
+            ),
+            SizedBox(
+              height: 18.h,
             ),
             Expanded(
               child: searchEditingController.text.isEmpty &&
@@ -121,8 +114,15 @@ class _ConsultationRequestsScreenState
                               'doctor'
                           ? ConsultationsFbController()
                               .readDoctorConsultations()
-                          : ConsultationsFbController()
-                              .readPatientConsultations(),
+                          : SharedPreferencesController()
+                                      .getter(
+                                          type: String, key: SpKeys.userType)
+                                      .toString() ==
+                                  'patient'
+                              ? ConsultationsFbController()
+                                  .readPatientConsultations()
+                              : ConsultationsFbController()
+                                  .readPharmacyConsultations(),
                       builder: (context, snapshot) {
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
@@ -175,6 +175,42 @@ class _ConsultationRequestsScreenState
           ],
         ),
       ),
+      floatingActionButton: SharedPreferencesController()
+                  .getter(type: String, key: SpKeys.userType)
+                  .toString() ==
+              'patient'
+          ? Padding(
+              padding: const EdgeInsets.all(14.0),
+              child: InkWell(
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const AddConsultationScreen()));
+                },
+                child: Expanded(
+                  child: Container(
+                    height: 66.h,
+                    width: 66.w,
+                    decoration: const BoxDecoration(
+                        color: Color(0xFF0b2d39), shape: BoxShape.circle),
+                    child: Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                         const Icon(Icons.upload_file_outlined, color: Colors.white,size: 33,),
+                          // Text(AppLocalizations.of(context)!.add,
+                          //   style: TextStyle(
+                          //     color: Colors.white,
+                          //     fontWeight: FontWeight.bold,
+                          //   ),
+                          // ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            )
+          : const SizedBox.shrink(),
     );
   }
 }

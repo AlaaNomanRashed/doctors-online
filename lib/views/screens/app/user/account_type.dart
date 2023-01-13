@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../widgets/my_button.dart';
+import '../../../widgets/my_button.dart';
 
 class AccountType extends StatefulWidget {
   const AccountType({Key? key}) : super(key: key);
@@ -41,29 +41,6 @@ class _AccountTypeState extends State<AccountType> {
               ),
             );
           }).toList(),
-          // children: [
-          //   MyButton(
-          //     buttonName: 'Doctor',
-          //     // isLoading: isLoading,
-          //     onPressed: () {
-          //       ///ToDo Go To Doctor Screen
-          //     },
-          //   ),
-          //   SizedBox(height: 14.h),
-          //   MyButton(
-          //     buttonName: 'Patient',
-          //     onPressed: () {
-          //       ///ToDo Go To Patient Screen
-          //     },
-          //   ),
-          //   SizedBox(height: 14.h),
-          //   MyButton(
-          //     buttonName: 'Pharmacy',
-          //     onPressed: () {
-          //       ///ToDo Go To Pharmacy Screen
-          //     },
-          //   ),
-          // ],
         ),
       ),
     );

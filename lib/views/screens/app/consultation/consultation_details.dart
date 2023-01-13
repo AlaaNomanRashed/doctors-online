@@ -7,13 +7,15 @@ import 'package:doctors_online/shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
-import '../../../firebase/controllers/consultation_fb_controller.dart';
-import '../../../models/major_model.dart';
-import '../../../models/user_model.dart';
-import '../../widgets/consultation_action_icon.dart';
+import '../../../../models/major_model.dart';
+import '../../../../models/user_model.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import '../../../../providers/auth_provider.dart';
+import '../../../widgets/consultation_action_button.dart';
 
 class ConsultationDetails extends StatefulWidget {
   final ConsultationModel consultationModel;
+
   const ConsultationDetails({Key? key, required this.consultationModel})
       : super(key: key);
 
@@ -27,17 +29,19 @@ class _ConsultationDetailsState extends State<ConsultationDetails> {
     getData();
     super.initState();
   }
-  bool actionLoading = false;
+
+  bool isLoading = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFa8d5e5),
       appBar: AppBar(
         backgroundColor: const Color(0xFF0b2d39),
-        title: const Text('Consultation Details'),
+        title: Text(AppLocalizations.of(context)!.consultationDetails),
         centerTitle: true,
-        actions: [action],
       ),
+      bottomNavigationBar: action,
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(
           horizontal: 24.w,
@@ -52,35 +56,43 @@ class _ConsultationDetailsState extends State<ConsultationDetails> {
                 Text(
                   date,
                   style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 12.sp,
+                    color: const Color(0xFF0b2d39),
+                    fontSize: 14.sp,
                   ),
                 ),
                 Chip(
-                  label: Text(consultationStatusText(context ,widget.consultationModel.requestStatus!  )),
-                  backgroundColor: consultationStatusColor(consultationStatus.name).withOpacity(0.7),
+                  label: Text(consultationStatusText(
+                      context, widget.consultationModel.requestStatus ?? '')),
+                  backgroundColor:
+                      consultationStatusColor(consultationStatus.name)
+                          .withOpacity(0.7),
                   padding: EdgeInsets.zero,
                   labelStyle: TextStyle(
-                    fontSize: 12.sp,
+                    fontSize: 14.sp,
                   ),
                 ),
               ],
             ),
-            Divider(
-              height: 5.h,
-            ),
-            SizedBox(
-              height: 16.h,
-            ),
+            Divider(height: 6.h),
+            SizedBox(height: 16.h),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  selectedDoctor!.username,
-                  style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 12.sp,
-                  ),
+                Row(
+                  children: [
+                    CircleAvatar(
+                        radius: 10.w,
+                        backgroundImage: NetworkImage(
+                            Provider.of<AuthProvider>(context).avatar_)),
+                    SizedBox(width: 6.w),
+                    Text(
+                      selectedDoctor?.username ?? '',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 14.sp,
+                      ),
+                    ),
+                  ],
                 ),
                 Text(
                   SharedPreferencesController()
@@ -96,22 +108,17 @@ class _ConsultationDetailsState extends State<ConsultationDetails> {
                 ),
               ],
             ),
-            Divider(
-              height: 5.h,
-            ),
-            SizedBox(
-              height: 16.h,
-            ),
+            Divider(height: 5.h),
+            SizedBox(height: 16.h),
             Text(
               widget.consultationModel.note ?? '',
               style: TextStyle(
                   fontSize: 14.sp, fontWeight: FontWeight.bold, height: 1.h),
             ),
-            SizedBox(
-              height: 16.h,
-            ),
+            SizedBox(height: 16.h),
             widget.consultationModel.medicalReports!.isNotEmpty
                 ? GridView.builder(
+                    shrinkWrap: true,
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
                       mainAxisSpacing: 10.h,
@@ -136,18 +143,6 @@ class _ConsultationDetailsState extends State<ConsultationDetails> {
     );
   }
 
-  Future<void> changeConsultationStatus(
-      ConsultationStatus consultationStatus) async {
-    setState(() {
-      actionLoading = true;
-    });
-    await ConsultationsFbController().changeConsultationStatus(
-        consultationStatus, widget.consultationModel.id);
-    Navigator.of(context).pop();
-
-    /// TODO : send Notification for user Type
-  }
-
   Widget get action {
     UserTypes userTypes = UserTypes.values.firstWhere((element) =>
         element.name ==
@@ -156,39 +151,92 @@ class _ConsultationDetailsState extends State<ConsultationDetails> {
             .toString());
     switch (userTypes) {
       case UserTypes.doctor:
-        // TODO: Handle this case.
-        break;
+        return consultationStatus == ConsultationStatus.waiting
+            ? Row(
+                children: [
+                  ConsultationActionButton(
+                    text: AppLocalizations.of(context)!.inProgress,
+                    status: ConsultationStatus.inProgress,
+                    consultationModel: widget.consultationModel,
+                    patientModel: selectedPatient,
+                    isLoading: isLoading,
+                  ),
+                ],
+              )
+            : consultationStatus == ConsultationStatus.inProgress
+
+                ///تحويل  الطلب الى قيد المراجعة
+                ? Row(
+                    children: [
+                      ConsultationActionButton(
+                        text: AppLocalizations.of(context)!.reject,
+                        status: ConsultationStatus.rejected,
+                        consultationModel: widget.consultationModel,
+                        patientModel: selectedPatient,
+                        isLoading: isLoading,
+                      ),
+                      ConsultationActionButton(
+                        text: AppLocalizations.of(context)!.transfer,
+                        status: ConsultationStatus.transferred,
+                        consultationModel: widget.consultationModel,
+                        patientModel: selectedPatient,
+                        isLoading: isLoading,
+                      ),
+                    ],
+                  )
+                : const SizedBox.shrink();
+
       case UserTypes.patient:
         return consultationStatus == ConsultationStatus.waiting
-            ? ConsultationActionIcon(
-                text: 'Delete',
-                icon: Icons.minimize,
-                status: ConsultationStatus.deleted,
-                isLoading:actionLoading ,
-                onTap: ()async {
-                  await changeConsultationStatus(ConsultationStatus.deleted,);
-                },
+            ? Row(
+                children: [
+                  ConsultationActionButton(
+                    text: AppLocalizations.of(context)!.delete,
+                    status: ConsultationStatus.deleted,
+                    consultationModel: widget.consultationModel,
+                    patientModel: selectedPatient,
+                    isLoading: isLoading,
+                  ),
+                ],
               )
             : const SizedBox.shrink();
       case UserTypes.pharmacy:
-        // TODO: Handle this case.
-        break;
+        return consultationStatus == ConsultationStatus.transferred
+            ? Row(
+                children: [
+                  ConsultationActionButton(
+                    text: AppLocalizations.of(context)!.complete,
+                    status: ConsultationStatus.completed,
+                    consultationModel: widget.consultationModel,
+                    patientModel: selectedPatient,
+                  ),
+                ],
+              )
+            : const SizedBox.shrink();
     }
-
-    return const SizedBox.shrink();
   }
 
   late ConsultationStatus consultationStatus = ConsultationStatus.values
       .firstWhere(
-          (element) => element.name == widget.consultationModel.requestStatus!);
+          (element) => element.name == widget.consultationModel.requestStatus);
 
   String get date {
     return '${widget.consultationModel.timestamp.toDate().year}/${widget.consultationModel.timestamp.toDate().month}/${widget.consultationModel.timestamp.toDate().day}';
   }
 
-
   Future<void> getData() async {
-    await getDoctor();
+    try {
+      setState(() {
+        isLoading = true;
+      });
+      await getDoctor();
+      await getPatient();
+      setState(() {
+        isLoading = false;
+      });
+    } catch (e) {
+      print(e.toString());
+    }
   }
 
   late MajorModel selectedMajor = Provider.of<AppProvider>(context)
@@ -196,13 +244,23 @@ class _ConsultationDetailsState extends State<ConsultationDetails> {
       .firstWhere((element) => element.id == widget.consultationModel.majorId);
 
   UserModel? selectedDoctor;
+  UserModel? selectedPatient;
 
   Future<void> getDoctor() async {
     var doctor = await UserFbController()
-        .getOneUser(widget.consultationModel.doctorUId!);
+        .getOneUser(widget.consultationModel.doctorUId ?? '');
 
     setState(() {
       selectedDoctor = doctor;
+    });
+  }
+
+  Future<void> getPatient() async {
+    var patient = await UserFbController()
+        .getOneUser(widget.consultationModel.patientUId ?? '');
+
+    setState(() {
+      selectedPatient = patient;
     });
   }
 }

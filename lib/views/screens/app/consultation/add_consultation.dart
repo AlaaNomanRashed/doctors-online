@@ -1,9 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:doctors_online/enums.dart';
+import 'package:doctors_online/firebase/controllers/notification_fb_controller.dart';
 import 'dart:io';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:doctors_online/helpers/snackbar.dart';
 import 'package:doctors_online/models/consultation_model.dart';
+import 'package:doctors_online/models/notifications_model.dart';
 import 'package:doctors_online/models/user_model.dart';
 import 'package:doctors_online/providers/app_provider.dart';
 import 'package:doctors_online/shared_preferences/shared_preferences.dart';
@@ -12,13 +15,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import '../../../firebase/controllers/consultation_fb_controller.dart';
-import '../../../firebase/controllers/fb_storage_controller.dart';
-import '../../../firebase/controllers/user_fb_controller.dart';
-import '../../../models/major_model.dart';
-import '../../widgets/my_button.dart';
-import '../../widgets/no_data.dart';
-import '../../widgets/text_field.dart';
+import '../../../../firebase/controllers/consultation_fb_controller.dart';
+import '../../../../firebase/controllers/fb_storage_controller.dart';
+import '../../../../firebase/controllers/user_fb_controller.dart';
+import '../../../../helpers/sent_fire_base_message_from_server.dart';
+import '../../../../models/major_model.dart';
+import '../../../../providers/auth_provider.dart';
+import '../../../widgets/my_button.dart';
+import '../../../widgets/no_data.dart';
+import '../../../widgets/text_field.dart';
 
 class AddConsultationScreen extends StatefulWidget {
   const AddConsultationScreen({Key? key}) : super(key: key);
@@ -54,22 +59,25 @@ class _AddConsultationScreenState extends State<AddConsultationScreen>
         backgroundColor: const Color(0xFFa8d5e5),
         appBar: AppBar(
           backgroundColor: const Color(0xFF0b2d39),
-          title: const Text('Medical Consultation'),
+          title:  Text(AppLocalizations.of(context)!.consulting),
           centerTitle: true,
         ),
-        body: /* doctors != null ? */
+        body: /* doctors != null ?*/
             Padding(
           padding: const EdgeInsets.all(30.0),
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                TextInputField(
-                  controller: noteEditingController,
-                  hint: 'add note here',
-                  icon: Icons.note_add_sharp,
-                  inputType: TextInputType.text,
-                  height: 120.h,
+                Padding(
+                  padding:  EdgeInsets.symmetric(vertical: 10.h),
+                  child: TextInputField(
+                    controller: noteEditingController,
+                    hint: AppLocalizations.of(context)!.addNote,
+                    icon: Icons.note_add_outlined,
+                    inputType: TextInputType.text,
+                   // height: 80.h,
+                  ),
                 ),
 
                 /// major
@@ -96,7 +104,10 @@ class _AddConsultationScreenState extends State<AddConsultationScreen>
                                 color: Colors.white,
                               ),
                             ),
-                            Text(selectedMajor.majorAr ?? ''),
+                            Text(
+                                selectedMajor.majorAr ?? '',
+
+                            ),
                           ],
                         ),
                       ),
@@ -132,22 +143,20 @@ class _AddConsultationScreenState extends State<AddConsultationScreen>
                                 ? Row(
                                     children: [
                                       CircleAvatar(
-                                        backgroundColor: Colors.grey.shade100,
-                                        backgroundImage: NetworkImage(
-                                            selectedDoctor!.avatar ?? ''),
-                                      ),
+                                          radius: 13.w,
+                                          backgroundImage: NetworkImage(
+                                              Provider.of<AuthProvider>(context)
+                                                  .avatar_)),
                                       SizedBox(
-                                        width: 10.w,
+                                        width: 4.w,
                                       ),
                                       Text(
-                                        /// todo error => null
                                         selectedDoctor!.username ?? '',
-                                        style: TextStyle(
-                                            color: Colors.indigo[900]),
+
                                       ),
                                     ],
                                   )
-                                : const Text('Doctors'),
+                                :  Text(AppLocalizations.of(context)!.doctor),
                           ],
                         ),
                       ),
@@ -161,7 +170,7 @@ class _AddConsultationScreenState extends State<AddConsultationScreen>
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Sort medical reports :-',
+                      '${AppLocalizations.of(context)!.sortMedicalReports}:-',
                       style: TextStyle(
                         color: const Color(0xFF0b2d39),
                         fontSize: 20.sp,
@@ -174,9 +183,9 @@ class _AddConsultationScreenState extends State<AddConsultationScreen>
                         await addNewImage();
                       },
                       child: Row(
-                        children: const [
-                          Icon(Icons.upload_file_sharp),
-                          Text('add'),
+                        children:  [
+                          const Icon(Icons.upload_file_outlined),
+                          Text(AppLocalizations.of(context)!.add),
                         ],
                       ),
                     ),
@@ -215,24 +224,23 @@ class _AddConsultationScreenState extends State<AddConsultationScreen>
                                 int found = selectedMedicalReports.indexWhere(
                                     (element) =>
                                         element ==
-                                        userModel.medicalReports![index]);
+                                        userModel.medicalReports[index]);
                                 if (found == -1) {
                                   selectedMedicalReports
-                                      .add(userModel.medicalReports![index]);
+                                      .add(userModel.medicalReports[index]);
                                 }
                               });
                             },
                             onTap: () {
                               setState(() {
                                 selectedMedicalReports.removeWhere((element) =>
-                                    element ==
-                                    userModel.medicalReports![index]);
+                                    element == userModel.medicalReports[index]);
                               });
                             },
                             child: Container(
                               decoration: BoxDecoration(
                                 border: selectedMedicalReports.contains(
-                                        userModel.medicalReports![index])
+                                        userModel.medicalReports[index])
                                     ? Border.all(
                                         color: Colors.black,
                                         width: 3,
@@ -258,12 +266,12 @@ class _AddConsultationScreenState extends State<AddConsultationScreen>
             ),
           ),
         ),
-        /*  : const Center(child: CircularProgressIndicator(color: Color(0xFF0b2d39),)),*/
+        /*: const Center(child: CircularProgressIndicator(color: Color(0xFF0b2d39),)),*/
 
         bottomNavigationBar: /* doctors != null ?*/ Padding(
           padding: const EdgeInsets.all(16.0),
           child: MyButton(
-            buttonName: 'Add Medical Consultation ',
+            buttonName: AppLocalizations.of(context)!.addMedicalConsultation,
             isLoading: isLoading,
             onPressed: () async {
               await performAddConsultation();
@@ -284,7 +292,6 @@ class _AddConsultationScreenState extends State<AddConsultationScreen>
 
   Future<void> getDoctors() async {
     try {
-      /// UserFbController  getUsersByType(doctor)
       var data =
           await UserFbController().getUsersByType(types: UserTypes.doctor);
       doctors = data ?? [];
@@ -363,14 +370,12 @@ class _AddConsultationScreenState extends State<AddConsultationScreen>
                   child: Row(
                     children: [
                       CircleAvatar(
-                        backgroundColor: Colors.grey.shade100,
-                        backgroundImage:
-                            NetworkImage(majorDoctors[index].avatar ?? ''),
-                      ),
-                      SizedBox(width: 10.w),
+                          radius: 14.w,
+                          backgroundImage: NetworkImage(
+                              Provider.of<AuthProvider>(context).avatar_)),
+                      SizedBox(width: 6.w),
                       Text(
-                        /// todo error => null
-                        majorDoctors[index].username ?? '',
+                        majorDoctors[index].username,
                         style: TextStyle(color: Colors.indigo[900]),
                       ),
                     ],
@@ -404,12 +409,19 @@ class _AddConsultationScreenState extends State<AddConsultationScreen>
     try {
       await ConsultationsFbController().create(consultation);
 
-      /// todo: send notification to doctor
+      /// In App
+      await NotificationFbController().create(notification);
+
+      /// Push Notification
+      await SendFireBaseMessageFromServer().sentMessage(
+        fcmTokens: [selectedDoctor!.fcmToken ?? ''],
+        title: notification.title,
+        body: notification.body,
+      );
       Navigator.of(context).pop();
     } catch (e) {
-      setState(() {
-        isLoading = false;
-      });
+      isLoading = false;
+      showSnackBar(context, message: e.toString(), error: true);
     }
     setState(() {
       isLoading = false;
@@ -427,10 +439,24 @@ class _AddConsultationScreenState extends State<AddConsultationScreen>
     consultationModel.doctorUId = selectedDoctor!.uId;
     consultationModel.note = noteEditingController.text;
     consultationModel.medicalReports = selectedMedicalReports;
+    consultationModel.pharmacyUId = '';
     consultationModel.timestamp = Timestamp.now();
     consultationModel.requestStatus = ConsultationStatus.waiting.name;
-
     return consultationModel;
+  }
+
+  NotificationsModel get notification {
+    NotificationsModel notificationsModel = NotificationsModel();
+    notificationsModel.id = DateTime.now().toString();
+    notificationsModel.timestamp = Timestamp.now();
+    notificationsModel.receiverUId = [selectedDoctor!.uId];
+    notificationsModel.title = 'طلب استشارة جديدي';
+    notificationsModel.body = 'لديك طلب استشارة جديد من المريض :- x'.replaceAll(
+        'x',
+        SharedPreferencesController()
+            .getter(type: String, key: SpKeys.username));
+
+    return notificationsModel;
   }
 
   bool get checkData {
@@ -491,10 +517,10 @@ class _AddConsultationScreenState extends State<AddConsultationScreen>
           if (taskState == TaskState.success) {
             await UserFbController().addNewFile(url);
             showSnackBar(context,
-                message: 'The image has been added successfully', error: false);
+                message: AppLocalizations.of(context)!.theImageHasBeenAddedSuccessfully, error: false);
           } else {
             showSnackBar(context,
-                message: 'Adding the image failed', error: true);
+                message: AppLocalizations.of(context)!.addingTheImageFailed, error: true);
           }
         });
   }
